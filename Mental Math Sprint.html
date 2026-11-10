@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mental Math Sprint</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+:root {
+    --bg: #f3f5ff;
+    --card: #ffffff;
+    --text: #20264a;
+    --muted: #858ba8;
+    --primary: #6258e8;
+    --primary-light: #eeedff;
+    --green: #18a875;
+    --red: #e45b6b;
+    --border: #e9eaf5;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 22px;
+}
+
+.app {
+    width: 100%;
+    max-width: 520px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+.logo {
+    width: 58px;
+    height: 58px;
+    background: var(--primary);
+    color: white;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    font-size: 29px;
+    margin: 0 auto 12px;
+    box-shadow: 0 8px 20px #6258e844;
+}
+
+h1 {
+    font-size: 29px;
+    font-weight: 900;
+    letter-spacing: -1px;
+}
+
+.subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.game-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 25px;
+    padding: 25px;
+    box-shadow: 0 12px 40px #343b6810;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.stat {
+    background: #f7f7fc;
+    border-radius: 14px;
+    padding: 12px 5px;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .7px;
+}
+
+.stat-value {
+    font-size: 23px;
+    font-weight: 900;
+    margin-top: 3px;
+}
+
+.timer-value {
+    color: var(--primary);
+}
+
+.timer-track {
+    width: 100%;
+    height: 9px;
+    background: #eeeefa;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.timer-bar {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #7167f2, #a18bff);
+    border-radius: 20px;
+    transition: width .25s linear, background .2s;
+}
+
+.question-area {
+    text-align: center;
+    padding: 18px 0 20px;
+}
+
+.question-label {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+}
+
+.question {
+    font-size: clamp(37px, 10vw, 53px);
+    font-weight: 900;
+    letter-spacing: -2px;
+    min-height: 65px;
+}
+
+.answer-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.answer-input {
+    flex: 1;
+    min-width: 0;
+    border: 2px solid var(--border);
+    border-radius: 13px;
+    padding: 14px;
+    font-family: inherit;
+    font-size: 21px;
+    font-weight: 800;
+    text-align: center;
+    outline: none;
+    color: var(--text);
+    transition: border .2s;
+}
+
+.answer-input:focus {
+    border-color: var(--primary);
+}
+
+.btn {
+    border: none;
+    border-radius: 13px;
+    padding: 13px 19px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: transform .15s, opacity .15s;
+}
+
+.btn:active {
+    transform: scale(.97);
+}
+
+.btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.primary-btn {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 5px 13px #6258e833;
+}
+
+.secondary-btn {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.feedback {
+    min-height: 27px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 800;
+    margin-top: 13px;
+}
+
+.feedback.correct {
+    color: var(--green);
+}
+
+.feedback.wrong {
+    color: var(--red);
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.controls .btn {
+    flex: 1;
+}
+
+.instructions {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 19px;
+}
+
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+.start-screen, .result-screen {
+    text-align: center;
+    padding: 20px 5px 10px;
+}
+
+.big-icon {
+    font-size: 57px;
+    margin-bottom: 12px;
+}
+
+.screen h2 {
+    font-size: 25px;
+    font-weight: 900;
+    margin-bottom: 8px;
+}
+
+.screen p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.rules {
+    background: #f7f7fc;
+    border-radius: 15px;
+    padding: 15px;
+    margin: 22px 0;
+    text-align: left;
+    font-size: 13px;
+    line-height: 1.9;
+}
+
+.rules div {
+    display: flex;
+    gap: 9px;
+    align-items: center;
+}
+
+.start-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 17px;
+}
+
+.result-score {
+    font-size: 65px;
+    font-weight: 900;
+    color: var(--primary);
+    line-height: 1.2;
+    margin: 15px 0 5px;
+}
+
+.result-label {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.result-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
+    margin: 23px 0;
+}
+
+.result-stat {
+    background: #f7f7fc;
+    border-radius: 13px;
+    padding: 13px 5px;
+}
+
+.result-stat strong {
+    display: block;
+    font-size: 21px;
+    font-weight: 900;
+}
+
+.result-stat span {
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.result-actions {
+    display: grid;
+    gap: 10px;
+}
+
+.streak {
+    color: #e49a27;
+    font-size: 13px;
+    font-weight: 900;
+    min-height: 20px;
+    margin-top: 8px;
+}
+
+@media (max-width: 400px) {
+    .game-card {
+        padding: 18px;
+    }
+
+    .btn {
+        padding: 12px;
+    }
+
+    h1 {
+        font-size: 25px;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+    <header>
+        <div class="logo">⚡</div>
+        <h1>Mental Math Sprint</h1>
+        <p class="subtitle">Think fast. Calculate faster. Beat the clock.</p>
+    </header>
+
+    <main class="game-card">
+
+        <section class="screen active" id="startScreen">
+            <div class="start-screen">
+                <div class="big-icon">🧠</div>
+                <h2>Ready, Set, Calculate!</h2>
+                <p>You have 60 seconds to solve as many maths questions as possible.</p>
+
+                <div class="rules">
+                    <div>⏱️ <span>60 seconds per sprint</span></div>
+                    <div>🎯 <span>10 points for every correct answer</span></div>
+                    <div>🔥 <span>Build streaks with consecutive correct answers</span></div>
+                    <div>➕ <span>Addition, subtraction, multiplication and division</span></div>
+                </div>
+
+                <button class="btn primary-btn start-btn" id="startBtn">Start Sprint →</button>
+            </div>
+        </section>
+
+        <section class="screen" id="gameScreen">
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-label">Score</div>
+                    <div class="stat-value" id="score">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Time</div>
+                    <div class="stat-value timer-value" id="timer">60</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Solved</div>
+                    <div class="stat-value" id="solved">0</div>
+                </div>
+            </div>
+
+            <div class="timer-track">
+                <div class="timer-bar" id="timerBar"></div>
+            </div>
+
+            <div class="question-area">
+                <div class="question-label">Solve this equation</div>
+                <div class="question" id="question">12 + 8</div>
+                <div class="streak" id="streak"></div>
+            </div>
+
+            <form class="answer-row" id="answerForm">
+                <input class="answer-input" id="answerInput" type="number" inputmode="numeric" placeholder="Your answer" autocomplete="off" required>
+                <button class="btn primary-btn" id="submitBtn" type="submit">Enter ↵</button>
+            </form>
+
+            <div class="feedback" id="feedback" aria-live="polite"></div>
+
+            <div class="controls">
+                <button class="btn secondary-btn" id="skipBtn">Skip question</button>
+                <button class="btn secondary-btn" id="endBtn">End sprint</button>
+            </div>
+
+            <p class="instructions">Press Enter to submit your answer.</p>
+        </section>
+
+        <section class="screen" id="resultScreen">
+            <div class="result-screen">
+                <div class="big-icon" id="resultIcon">🏆</div>
+                <h2 id="resultTitle">Sprint Complete!</h2>
+                <p id="resultMessage">Great effort! Here's how you performed.</p>
+
+                <div class="result-score" id="finalScore">0</div>
+                <div class="result-label">Total Points</div>
+
+                <div class="result-stats">
+                    <div class="result-stat">
+                        <strong id="finalSolved">0</strong>
+                        <span>Correct</span>
+                    </div>
+                    <div class="result-stat">
+                        <strong id="finalWrong">0</strong>
+                        <span>Incorrect</span>
+                    </div>
+                    <div class="result-stat">
+                        <strong id="finalBest">0</strong>
+                        <span>Best Streak</span>
+                    </div>
+                </div>
+
+                <div class="result-actions">
+                    <button class="btn primary-btn start-btn" id="shareBtn">↗ Share My Score</button>
+                    <button class="btn secondary-btn start-btn" id="playAgainBtn">Play Again ↻</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+const startScreen = document.getElementById("startScreen");
+const gameScreen = document.getElementById("gameScreen");
+const resultScreen = document.getElementById("resultScreen");
+
+const scoreDisplay = document.getElementById("score");
+const timerDisplay = document.getElementById("timer");
+const solvedDisplay = document.getElementById("solved");
+const questionDisplay = document.getElementById("question");
+const answerInput = document.getElementById("answerInput");
+const feedback = document.getElementById("feedback");
+const timerBar = document.getElementById("timerBar");
+const streakDisplay = document.getElementById("streak");
+
+let score = 0;
+let solved = 0;
+let wrong = 0;
+let timeLeft = 60;
+let currentAnswer = 0;
+let streak = 0;
+let bestStreak = 0;
+let timerInterval = null;
+let gameActive = false;
+
+function showScreen(screen) {
+    [startScreen, gameScreen, resultScreen].forEach(s => s.classList.remove("active"));
+    screen.classList.add("active");
+}
+
+function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function generateQuestion() {
+    const operations = ["+", "-", "×", "÷"];
+    const operation = operations[randomInt(0, operations.length - 1)];
+
+    let a, b;
+
+    if (operation === "+") {
+        a = randomInt(5, 99);
+        b = randomInt(2, 99);
+        currentAnswer = a + b;
+    } else if (operation === "-") {
+        a = randomInt(10, 99);
+        b = randomInt(2, a);
+        currentAnswer = a - b;
+    } else if (operation === "×") {
+        a = randomInt(2, 15);
+        b = randomInt(2, 12);
+        currentAnswer = a * b;
+    } else {
+        b = randomInt(2, 12);
+        currentAnswer = randomInt(2, 15);
+        a = b * currentAnswer;
+    }
+
+    questionDisplay.textContent = `${a} ${operation} ${b}`;
+    answerInput.value = "";
+    answerInput.focus();
+}
+
+function updateStats() {
+    scoreDisplay.textContent = score;
+    solvedDisplay.textContent = solved;
+    streakDisplay.textContent = streak >= 2 ? `🔥 ${streak} correct in a row!` : "";
+}
+
+function submitAnswer(event) {
+    event.preventDefault();
+
+    if (!gameActive || answerInput.value.trim() === "") return;
+
+    const userAnswer = Number(answerInput.value);
+
+    if (userAnswer === currentAnswer) {
+        score += 10;
+        solved++;
+        streak++;
+        bestStreak = Math.max(bestStreak, streak);
+        feedback.textContent = streak >= 3 ? "🔥 Excellent! Streak continues!" : "✓ Correct! +10 points";
+        feedback.className = "feedback correct";
+    } else {
+        wrong++;
+        streak = 0;
+        feedback.textContent = `✗ Not quite! The answer was ${currentAnswer}.`;
+        feedback.className = "feedback wrong";
+    }
+
+    updateStats();
+
+    setTimeout(() => {
+        if (gameActive) {
+            feedback.textContent = "";
+            feedback.className = "feedback";
+            generateQuestion();
+        }
+    }, 350);
+}
+
+function updateTimer() {
+    timerDisplay.textContent = timeLeft;
+    timerBar.style.width = `${(timeLeft / 60) * 100}%`;
+
+    if (timeLeft <= 10) {
+        timerBar.style.background = "#e45b6b";
+        timerDisplay.style.color = "#e45b6b";
+    } else {
+        timerBar.style.background = "linear-gradient(90deg, #7167f2, #a18bff)";
+        timerDisplay.style.color = "#6258e8";
+    }
+}
+
+function startGame() {
+    clearInterval(timerInterval);
+
+    score = 0;
+    solved = 0;
+    wrong = 0;
+    timeLeft = 60;
+    streak = 0;
+    bestStreak = 0;
+    gameActive = true;
+
+    updateStats();
+    updateTimer();
+    feedback.textContent = "";
+    feedback.className = "feedback";
+    timerDisplay.style.color = "#6258e8";
+
+    showScreen(gameScreen);
+    generateQuestion();
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimer();
+
+        if (timeLeft <= 0) {
+            finishGame();
+        }
+    }, 1000);
+}
+
+function finishGame() {
+    if (!gameActive) return;
+
+    gameActive = false;
+    clearInterval(timerInterval);
+
+    document.getElementById("finalScore").textContent = score;
+    document.getElementById("finalSolved").textContent = solved;
+    document.getElementById("finalWrong").textContent = wrong;
+    document.getElementById("finalBest").textContent = bestStreak;
+
+    let icon = "💪";
+    let title = "Sprint Complete!";
+    let message = "Every attempt makes you faster and sharper.";
+
+    if (score >= 300) {
+        icon = "🏆";
+        title = "Math Champion!";
+        message = "Outstanding! Your mental maths skills are on fire.";
+    } else if (score >= 150) {
+        icon = "🌟";
+        title = "Fantastic Work!";
+        message = "You're building some impressive calculation speed.";
+    } else if (score >= 50) {
+        icon = "👏";
+        title = "Nice Effort!";
+        message = "Keep practising and try to beat your score.";
+    }
+
+    document.getElementById("resultIcon").textContent = icon;
+    document.getElementById("resultTitle").textContent = title;
+    document.getElementById("resultMessage").textContent = message;
+
+    showScreen(resultScreen);
+}
+
+async function shareScore() {
+    const text = `⚡ I scored ${score} points in Mental Math Sprint!\n\n✓ Correct answers: ${solved}\n✗ Incorrect answers: ${wrong}\n🔥 Best streak: ${bestStreak}\n\nCan you beat my score?`;
+
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: "My Mental Math Sprint Score",
+                text
+            });
+        } catch (error) {
+            if (error.name !== "AbortError") copyScore(text);
+        }
+    } else {
+        copyScore(text);
+    }
+}
+
+async function copyScore(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+        const button = document.getElementById("shareBtn");
+        button.textContent = "✓ Score Copied!";
+        setTimeout(() => button.textContent = "↗ Share My Score", 2000);
+    } catch {
+        window.prompt("Copy your score:", text);
+    }
+}
+
+document.getElementById("startBtn").addEventListener("click", startGame);
+document.getElementById("playAgainBtn").addEventListener("click", startGame);
+document.getElementById("answerForm").addEventListener("submit", submitAnswer);
+document.getElementById("skipBtn").addEventListener("click", () => {
+    if (!gameActive) return;
+    streak = 0;
+    feedback.textContent = "Question skipped!";
+    feedback.className = "feedback";
+    updateStats();
+    generateQuestion();
+});
+document.getElementById("endBtn").addEventListener("click", finishGame);
+document.getElementById("shareBtn").addEventListener("click", shareScore);
+</script>
+
+</body>
+</html>
